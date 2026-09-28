@@ -390,7 +390,7 @@ class AppEngine {
     const select = document.getElementById('grading-course-select');
     select.innerHTML = '<option value="">-- Chọn môn học --</option>';
 
-    const res = await fetch('/api/admin/courses');
+    const res = await fetch('/api/teacher/courses');
     if (res.ok) {
       const courses = await res.json();
       courses.forEach(c => {

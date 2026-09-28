@@ -6,7 +6,7 @@ from classroom_management.database import get_db
 from classroom_management.models import User, Course, Schedule, Enrollment, Attendance, Grade
 from classroom_management.schemas import (
     UserResponse, ScheduleResponse, AttendanceBatchSubmit,
-    AttendanceResponse, GradeUpdate, GradeResponse
+    AttendanceResponse, GradeUpdate, GradeResponse, CourseResponse
 )
 from classroom_management.auth import require_roles
 
@@ -151,6 +151,14 @@ def get_schedule_attendance(
         results.append(res)
     return results
 
+@router.get("/courses", response_model=List[CourseResponse])
+def get_teacher_courses(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(teacher_or_admin)
+):
+    """Danh sách môn học dành cho giáo viên chọn cho điểm."""
+    return db.query(Course).all()
+
 @router.get("/courses/{course_id}/grades", response_model=List[GradeResponse])
 def get_course_grades(
     course_id: int,
@@ -165,15 +173,22 @@ def get_course_grades(
     enrollments = db.query(Enrollment).filter(Enrollment.course_id == course_id).all()
     results = []
     
-    for en in enrollments:
-        student = db.query(User).filter(User.id == en.student_id).first()
-        grade = db.query(Grade).filter(Grade.student_id == en.student_id, Grade.course_id == course_id).first()
+    if enrollments:
+        students = [db.query(User).filter(User.id == en.student_id).first() for en in enrollments]
+    else:
+        # If no students enrolled via registration yet, allow grading any student in system
+        students = db.query(User).filter(User.role == "student").all()
+
+    for student in students:
+        if not student:
+            continue
+        grade = db.query(Grade).filter(Grade.student_id == student.id, Grade.course_id == course_id).first()
         
         results.append(GradeResponse(
             id=grade.id if grade else 0,
-            student_id=en.student_id,
-            student_name=student.full_name if student else "",
-            student_code=student.code if student else "",
+            student_id=student.id,
+            student_name=student.full_name,
+            student_code=student.code,
             course_id=course_id,
             course_name=course.course_name,
             course_code=course.course_code,
