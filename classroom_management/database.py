@@ -1,4 +1,5 @@
 import os
+import tempfile
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
@@ -13,7 +14,14 @@ SQLSERVER_CONN_STR = os.getenv(
     )
 )
 
-SQLITE_URL = os.getenv("SQLITE_URL", "sqlite:///./classroom.db")
+# On Vercel serverless environment, current directory is read-only, use /tmp directory
+if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+    temp_db_path = os.path.join(tempfile.gettempdir(), "classroom.db")
+    default_sqlite_url = f"sqlite:///{temp_db_path}"
+else:
+    default_sqlite_url = "sqlite:///./classroom.db"
+
+SQLITE_URL = os.getenv("SQLITE_URL", default_sqlite_url)
 
 if DB_TYPE.lower() == "sqlserver":
     try:
@@ -31,7 +39,7 @@ if DB_TYPE.lower() == "sqlserver":
         engine = create_engine(SQLITE_URL, connect_args={"check_same_thread": False})
 else:
     engine = create_engine(SQLITE_URL, connect_args={"check_same_thread": False})
-    print(" Using SQLite database engine for execution.")
+    print(f" Using SQLite database engine at {SQLITE_URL}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
