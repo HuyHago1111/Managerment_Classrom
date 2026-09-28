@@ -1,5 +1,5 @@
 /**
- * Class Management System - Antigravity Frontend Engine
+ * Class Management System - Frontend Engine
  */
 
 class AppEngine {
