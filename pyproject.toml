@@ -23,5 +23,5 @@ dependencies = [
     "pyodbc>=5.1.0"
 ]
 
-[project.scripts]
-classroom-server = "run:main"
+[tool.setuptools]
+packages = ["classroom_management", "api"]
