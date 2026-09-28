@@ -1,0 +1,26 @@
+# Python Byte-code
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Database & Environment
+classroom.db
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Vercel & Build Artifacts
+.vercel
+build/
+dist/
+*.egg-info/
