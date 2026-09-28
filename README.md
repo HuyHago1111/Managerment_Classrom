@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🎓 Hệ Thống Quản Lý Lớp Học (Classroom Management System)
 
 Dự án mô hình **3 Tầng (3-Tier Architecture)** được phát triển bằng ngôn ngữ **Python (FastAPI)** kết hợp giao diện **Glassmorphism Web Dashboard**, hỗ trợ **SQL Server** làm tầng dữ liệu và sẵn sàng deploy lên **Vercel**.
@@ -113,3 +114,6 @@ git push -u origin main
 1. Truy cập [Vercel Dashboard](https://vercel.com/dashboard) và chọn **"Add New Project"**.
 2. Kết nối với GitHub repository: `https://github.com/HuyHago1111/Managerment_of_class.git`.
 3. Vercel sẽ tự động nhận diện file `vercel.json` và deploy ứng dụng web của bạn lên Internet!
+=======
+# Managerment_of_class
+>>>>>>> 1356731f8e13d768f84c1211fa0cfbdb0c2a2283
