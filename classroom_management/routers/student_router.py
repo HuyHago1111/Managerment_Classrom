@@ -3,12 +3,60 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from classroom_management.database import get_db
 from classroom_management.models import User, Course, Schedule, Enrollment, Grade, Attendance
-from classroom_management.schemas import CourseResponse, ScheduleResponse, GradeResponse, AttendanceResponse
+from classroom_management.schemas import (
+    CourseResponse, ScheduleResponse, GradeResponse, AttendanceResponse,
+    CourseTuitionItem, TuitionSummaryResponse
+)
 from classroom_management.auth import require_roles
 
 router = APIRouter(prefix="/api/student", tags=["Student"])
 
 student_or_admin = require_roles(["student", "admin"])
+
+@router.get("/tuition", response_model=TuitionSummaryResponse)
+def get_student_tuition_summary(
+    term: Optional[str] = "Học kỳ 1 - 2026",
+    db: Session = Depends(get_db),
+    current_user: User = Depends(student_or_admin)
+):
+    """Tra cứu chi tiết học phí từng môn học và tổng học phí trong học kỳ của sinh viên."""
+    my_enrollments = db.query(Enrollment).filter(
+        Enrollment.student_id == current_user.id,
+        Enrollment.term == term
+    ).all()
+    
+    course_items = []
+    total_credits = 0
+    total_fee = 0.0
+    
+    for en in my_enrollments:
+        course = db.query(Course).filter(Course.id == en.course_id).first()
+        if course:
+            fee_per_credit = course.tuition_fee or 1500000.0
+            course_total = course.credits * fee_per_credit
+            total_credits += course.credits
+            total_fee += course_total
+            
+            course_items.append(CourseTuitionItem(
+                course_id=course.id,
+                course_code=course.course_code,
+                course_name=course.course_name,
+                credits=course.credits,
+                fee_per_credit=fee_per_credit,
+                total_course_fee=course_total,
+                term=course.term
+            ))
+            
+    return TuitionSummaryResponse(
+        student_id=current_user.id,
+        student_name=current_user.full_name,
+        student_code=current_user.code,
+        term=term,
+        total_credits=total_credits,
+        total_tuition_fee=total_fee,
+        payment_status="Chờ thanh toán" if total_fee > 0 else "Hoàn thành",
+        courses=course_items
+    )
 
 @router.get("/courses", response_model=List[CourseResponse])
 def get_available_courses(

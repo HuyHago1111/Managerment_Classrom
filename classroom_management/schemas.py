@@ -65,6 +65,7 @@ class CourseCreate(BaseModel):
     department: Optional[str] = None
     description: Optional[str] = None
     term: Optional[str] = "Học kỳ 1 - 2026"
+    tuition_fee: Optional[float] = 1500000.0
 
 class CourseResponse(BaseModel):
     id: int
@@ -74,10 +75,31 @@ class CourseResponse(BaseModel):
     department: Optional[str] = None
     description: Optional[str] = None
     term: str
+    tuition_fee: Optional[float] = 1500000.0
     is_enrolled: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+# Tuition Schemas for Student
+class CourseTuitionItem(BaseModel):
+    course_id: int
+    course_code: str
+    course_name: str
+    credits: int
+    fee_per_credit: float
+    total_course_fee: float
+    term: str
+
+class TuitionSummaryResponse(BaseModel):
+    student_id: int
+    student_name: str
+    student_code: Optional[str] = None
+    term: str
+    total_credits: int
+    total_tuition_fee: float
+    payment_status: str
+    courses: List[CourseTuitionItem]
 
 # Schedule Schemas
 class ScheduleCreate(BaseModel):

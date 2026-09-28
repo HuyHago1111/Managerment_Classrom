@@ -47,7 +47,8 @@ CREATE TABLE dbo.courses (
     credits INT NOT NULL DEFAULT 3,
     department NVARCHAR(100) NULL,
     description NVARCHAR(MAX) NULL,
-    term NVARCHAR(20) NOT NULL DEFAULT N'Học kỳ 1 - 2026'
+    term NVARCHAR(20) NOT NULL DEFAULT N'Học kỳ 1 - 2026',
+    tuition_fee FLOAT NOT NULL DEFAULT 1500000.0 -- Học phí (VNĐ/tín chỉ)
 );
 GO
 

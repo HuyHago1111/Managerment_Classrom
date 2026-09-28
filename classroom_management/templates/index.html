@@ -367,6 +367,56 @@
           </div>
         </div>
 
+        <!-- STUDENT TUITION SECTION (HỌC PHÍ SINH VIÊN) -->
+        <div id="sec-tuition" class="content-sec" style="display: none;">
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 24px;">
+            <h2><i class="fa-solid fa-wallet"></i> Tra Cứu Học Phí Cá Nhân</h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Thông tin học phí chi tiết các môn học đã đăng ký trong Học kỳ 1 - 2026.</p>
+
+            <div class="stats-grid" style="margin-bottom: 24px;">
+              <div class="glass-panel stat-card">
+                <div class="stat-icon blue"><i class="fa-solid fa-book-bookmark"></i></div>
+                <div class="stat-info">
+                  <h3 id="tuition-total-credits">0</h3>
+                  <p>Tổng Số Tín Chỉ</p>
+                </div>
+              </div>
+              <div class="glass-panel stat-card">
+                <div class="stat-icon green"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div class="stat-info">
+                  <h3 id="tuition-total-fee" style="font-size: 20px; color: #34d399;">0 VNĐ</h3>
+                  <p>Tổng Học Phí Kỳ Này</p>
+                </div>
+              </div>
+              <div class="glass-panel stat-card">
+                <div class="stat-icon amber"><i class="fa-solid fa-receipt"></i></div>
+                <div class="stat-info">
+                  <h3 id="tuition-payment-status" style="font-size: 18px;">Chờ thanh toán</h3>
+                  <p>Trạng Thái Nộp Học Phí</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Mã Môn</th>
+                    <th>Tên Môn Học</th>
+                    <th>Số Tín Chỉ</th>
+                    <th>Đơn Giá / Tín Chỉ</th>
+                    <th>Thành Tiền (VNĐ)</th>
+                    <th>Học Kỳ</th>
+                  </tr>
+                </thead>
+                <tbody id="tuition-table-body">
+                  <!-- Tuition items rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <!-- ADMIN USER & PERMISSION MANAGEMENT -->
         <div id="sec-admin-users" class="content-sec" style="display: none;">
           <div class="glass-panel" style="padding: 24px;">

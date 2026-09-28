@@ -39,6 +39,7 @@ class Course(Base):
     department = Column(String(100), nullable=True)
     description = Column(Text, nullable=True)
     term = Column(String(20), nullable=False, default="Học kỳ 1 - 2026")
+    tuition_fee = Column(Float, nullable=False, default=1500000.0) # Học phí per course / credit (VNĐ)
 
     # Relationships
     schedules = relationship("Schedule", back_populates="course", cascade="all, delete-orphan")

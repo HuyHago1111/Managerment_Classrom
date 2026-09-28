@@ -134,6 +134,7 @@ class AppEngine {
         { id: 'schedule', icon: 'fa-calendar-days', label: 'Lịch Học Cá Nhân' },
         { id: 'registration', icon: 'fa-folder-plus', label: 'Đăng Ký Môn Học' },
         { id: 'my-grades', icon: 'fa-award', label: 'Bảng Điểm Cá Nhân' },
+        { id: 'tuition', icon: 'fa-wallet', label: 'Tra Cứu Học Phí' },
         { id: 'profile', icon: 'fa-user-gear', label: 'Hồ Sơ Cá Nhân' }
       ];
     }
@@ -171,6 +172,7 @@ class AppEngine {
     if (sectionId === 'grading') this.loadGradingCourses();
     if (sectionId === 'registration') this.loadStudentCoursesRegistration();
     if (sectionId === 'my-grades') this.loadStudentGrades();
+    if (sectionId === 'tuition') this.loadStudentTuition();
     if (sectionId === 'admin-users') this.loadAdminUsers();
     if (sectionId === 'admin-courses') this.loadAdminCourses();
   }
@@ -532,6 +534,37 @@ class AppEngine {
           <td>${g.final_score ?? '-'}</td>
           <td><b style="color:var(--primary); font-size:16px;">${g.total_score ?? '-'}</b></td>
           <td>${g.note || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+
+  async loadStudentTuition() {
+    const res = await fetch('/api/student/tuition');
+    const tbody = document.getElementById('tuition-table-body');
+    tbody.innerHTML = '';
+
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById('tuition-total-credits').innerText = `${data.total_credits} tín chỉ`;
+      document.getElementById('tuition-total-fee').innerText = `${data.total_tuition_fee.toLocaleString('vi-VN')} VNĐ`;
+      document.getElementById('tuition-payment-status').innerText = data.payment_status;
+
+      if (data.courses.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Bạn chưa đăng ký môn học nào trong kỳ này.</td></tr>`;
+        return;
+      }
+
+      data.courses.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${c.course_code}</b></td>
+          <td>${c.course_name}</td>
+          <td>${c.credits} tín chỉ</td>
+          <td>${c.fee_per_credit.toLocaleString('vi-VN')} VNĐ</td>
+          <td><b style="color:var(--success); font-size:15px;">${c.total_course_fee.toLocaleString('vi-VN')} VNĐ</b></td>
+          <td>${c.term}</td>
         `;
         tbody.appendChild(tr);
       });
