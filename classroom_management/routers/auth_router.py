@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from sqlalchemy.orm import Session
 from classroom_management.database import get_db
 from classroom_management.models import User
-from classroom_management.schemas import UserLogin, Token, UserResponse, UserProfileUpdate
-from classroom_management.auth import verify_password, create_access_token, get_current_user
+from classroom_management.schemas import UserLogin, Token, UserResponse, UserProfileUpdate, ChangePasswordRequest
+from classroom_management.auth import verify_password, hash_password, create_access_token, get_current_user
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
@@ -72,3 +72,25 @@ def update_profile(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+@router.post("/change-password")
+def change_password(
+    payload: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Đổi mật khẩu tài khoản người dùng."""
+    if not verify_password(payload.old_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mật khẩu hiện tại không chính xác!"
+        )
+    if len(payload.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mật khẩu mới phải có ít nhất 6 ký tự!"
+        )
+    
+    current_user.password_hash = hash_password(payload.new_password)
+    db.commit()
+    return {"message": "Đổi mật khẩu thành công! Vui lòng sử dụng mật khẩu mới cho lần đăng nhập sau."}

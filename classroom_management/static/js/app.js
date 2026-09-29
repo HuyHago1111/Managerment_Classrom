@@ -232,6 +232,46 @@ class AppEngine {
     }
   }
 
+  async changePassword(e) {
+    e.preventDefault();
+    const oldPassword = document.getElementById('change-old-password').value;
+    const newPassword = document.getElementById('change-new-password').value;
+    const confirmPassword = document.getElementById('change-confirm-password').value;
+
+    if (newPassword !== confirmPassword) {
+      this.showToast('Mật khẩu mới và xác nhận mật khẩu không khớp!', 'error');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      this.showToast('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          old_password: oldPassword,
+          new_password: newPassword
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        this.showToast(data.message || 'Đổi mật khẩu thành công!', 'success');
+        document.getElementById('change-old-password').value = '';
+        document.getElementById('change-new-password').value = '';
+        document.getElementById('change-confirm-password').value = '';
+      } else {
+        this.showToast(data.detail || 'Lỗi khi đổi mật khẩu', 'error');
+      }
+    } catch (err) {
+      this.showToast('Lỗi hệ thống khi đổi mật khẩu', 'error');
+    }
+  }
+
   async loadStudentList() {
     const search = document.getElementById('search-student-input')?.value || '';
     const res = await fetch(`/api/teacher/students?search=${encodeURIComponent(search)}`);
