@@ -142,6 +142,7 @@ class AppEngine {
     items.forEach(item => {
       const li = document.createElement('li');
       li.className = `nav-item ${item.id === this.currentSection ? 'active' : ''}`;
+      li.dataset.section = item.id;
       li.innerHTML = `<i class="fa-solid ${item.icon} nav-icon"></i> <span>${item.label}</span>`;
       li.onclick = () => this.switchSection(item.id);
       menu.appendChild(li);
@@ -151,30 +152,57 @@ class AppEngine {
   switchSection(sectionId) {
     this.currentSection = sectionId;
 
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.content-sec').forEach(sec => sec.style.display = 'none');
-
-    const targetSec = document.getElementById(`sec-${sectionId}`);
-    if (targetSec) targetSec.style.display = 'block';
-
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-      if (item.getAttribute('onclick')?.includes(sectionId)) {
-        item.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(el => {
+      if (el.dataset.section === sectionId || el.getAttribute('onclick')?.includes(sectionId)) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
       }
     });
 
-    if (sectionId === 'dashboard') this.loadAdminDashboardStats();
-    if (sectionId === 'profile') this.loadProfile();
-    if (sectionId === 'students-list') this.loadStudentList();
-    if (sectionId === 'schedule') this.loadScheduleView();
-    if (sectionId === 'attendance') this.loadAttendanceSchedules();
-    if (sectionId === 'grading') this.loadGradingCourses();
-    if (sectionId === 'registration') this.loadStudentCoursesRegistration();
-    if (sectionId === 'my-grades') this.loadStudentGrades();
-    if (sectionId === 'tuition') this.loadStudentTuition();
-    if (sectionId === 'admin-users') this.loadAdminUsers();
-    if (sectionId === 'admin-courses') this.loadAdminCourses();
+    document.querySelectorAll('.content-sec').forEach(sec => sec.style.display = 'none');
+
+    const targetSec = document.getElementById(`sec-${sectionId}`);
+    if (targetSec) {
+      targetSec.style.display = 'block';
+    }
+
+    const titles = {
+      'dashboard': { title: 'Tổng Quan Hệ Thống', sub: 'Thống kê tổng quan và thông tin quản trị' },
+      'admin-users': { title: 'Tạo & Phân Quyền Tài Khoản', sub: 'Quản lý tài khoản Admin, Giáo viên và Sinh viên' },
+      'admin-courses': { title: 'Quản Lý Môn Học & Xếp Lịch Dạy', sub: 'Tạo môn học mới và phân công lịch dạy cho giáo viên' },
+      'students-list': { title: 'Hồ Sơ Học Sinh / Sinh Viên', sub: 'Danh sách và thông tin chi tiết học sinh trong hệ thống' },
+      'schedule': { title: 'Lịch Dạy & Học', sub: 'Tra cứu thời khóa biểu giảng dạy và học tập' },
+      'attendance': { title: 'Điểm Danh Học Sinh', sub: 'Quản lý trạng thái chuyên cần theo từng buổi học' },
+      'grading': { title: 'Cho Điểm Sinh Viên', sub: 'Nhập điểm giữa kỳ, cuối kỳ và đánh giá kết quả học tập' },
+      'registration': { title: 'Đăng Ký Môn Học', sub: 'Đăng ký các môn học mở trong học kỳ' },
+      'my-grades': { title: 'Bảng Điểm Cá Nhân', sub: 'Xem điểm chi tiết và kết quả học tập các môn' },
+      'tuition': { title: 'Tra Cứu Học Phí', sub: 'Chi tiết học phí từng môn và tổng tiền phải nộp' },
+      'profile': { title: 'Hồ Sơ Cá Nhân & Mật Khẩu', sub: 'Cập nhật thông tin tài khoản và đổi mật khẩu' }
+    };
+
+    if (titles[sectionId]) {
+      const h = document.getElementById('page-heading');
+      const s = document.getElementById('page-subheading');
+      if (h) h.innerText = titles[sectionId].title;
+      if (s) s.innerText = titles[sectionId].sub;
+    }
+
+    try {
+      if (sectionId === 'dashboard') this.loadAdminDashboardStats();
+      if (sectionId === 'profile') this.loadProfile();
+      if (sectionId === 'students-list') this.loadStudentList();
+      if (sectionId === 'schedule') this.loadScheduleView();
+      if (sectionId === 'attendance') this.loadAttendanceSchedules();
+      if (sectionId === 'grading') this.loadGradingCourses();
+      if (sectionId === 'registration') this.loadStudentCoursesRegistration();
+      if (sectionId === 'my-grades') this.loadStudentGrades();
+      if (sectionId === 'tuition') this.loadStudentTuition();
+      if (sectionId === 'admin-users') this.loadAdminUsers();
+      if (sectionId === 'admin-courses') this.loadAdminCourses();
+    } catch (err) {
+      console.error('Error switching section:', err);
+    }
   }
 
   async loadAdminDashboardStats() {
